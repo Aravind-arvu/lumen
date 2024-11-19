@@ -1,0 +1,125 @@
+
+import React, { useState } from 'react';
+
+const SalesTable = () => {
+    const [values, setValues] = useState({
+        electronics: 1500,
+        phones: 800,
+        laptops: 700,
+        furniture: 1000,
+        tables: 300,
+        chairs: 700,
+    });
+
+    const [variances, setVariances] = useState({
+        electronics: 0,
+        phones: 0,
+        laptops: 0,
+        furniture: 0,
+        tables: 0,
+        chairs: 0,
+    });
+
+    const updateAllocation = (category, percentage) => {
+        const currentValue = values[category];
+        const newValue = currentValue + (currentValue * (percentage / 100));
+        const variance = ((newValue - currentValue) / currentValue) * 100;
+
+        setValues(prevValues => ({
+            ...prevValues,
+            [category]: newValue,
+        }));
+
+        setVariances(prevVariances => ({
+            ...prevVariances,
+            [category]: variance,
+        }));
+
+        if (category === 'phones' || category === 'laptops') {
+            updateParentCategory('electronics');
+        }
+    };
+
+    const updateParentCategory = (parentCategory) => {
+        const phonesValue = values.phones;
+        const laptopsValue = values.laptops;
+        const newParentValue = phonesValue + laptopsValue;
+        const initialParentValue = 1500; // Initial value of Electronics
+        const parentVariance = ((newParentValue - initialParentValue) / initialParentValue) * 100;
+
+        setValues(prevValues => ({
+            ...prevValues,
+            [parentCategory]: newParentValue,
+        }));
+
+        setVariances(prevVariances => ({
+            ...prevVariances,
+            [parentCategory]: parentVariance,
+        }));
+    };
+
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Value</th>
+                    <th>Input</th>
+                    <th>Allocation %</th>
+                    <th>Allocation Val</th>
+                    <th>Variance %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Electronics</td>
+                    <td>{values.electronics.toFixed(2)}</td>
+                    <td></td>
+                    <td><button onClick={() => updateAllocation('electronics', 10)}>Update</button></td>
+                    <td></td>
+                    <td>{variances.electronics.toFixed(2)}%</td>
+                </tr>
+                <tr>
+                    <td>-- Phones</td>
+                    <td>{values.phones.toFixed(2)}</td>
+                    <td><input type="number" onChange={(e) => updateAllocation('phones', parseFloat(e.target.value))} /></td>
+                    <td><button onClick={() => updateAllocation('phones', 10)}>Update</button></td>
+                    <td></td>
+                    <td>{variances.phones.toFixed(2)}%</td>
+                </tr>
+                <tr>
+                    <td>-- Laptops</td>
+                    <td>{values.laptops.toFixed(2)}</td>
+                    <td></td>
+                    <td><button onClick={() => updateAllocation('laptops', 10)}>Update</button></td>
+                    <td></td>
+                    <td>{variances.laptops.toFixed(2)}%</td>
+                </tr>
+                <tr>
+                    <td>Furniture</td>
+                    <td>{values.furniture.toFixed(2)}</td>
+                    <td></td>
+                    <td><button onClick={() => updateAllocation('furniture', 10)}>Update</button></td>
+                    <td></td>
+                    <td>{variances.furniture.toFixed(2)}%</td>
+                </tr>
+                <tr>
+                    <td>-- Tables</td>
+                    <td>{values.tables.toFixed(2)}</td>
+                    <td></td>
+                    <td><button onClick={() => updateAllocation('tables', 10)}>Update</button></td>
+                    <td></td>
+                    <td>{variances.tables.toFixed(2)}%</td>
+                </tr>
+                <tr>
+                    <td>-- Chairs</td>
+                    <td>{values.chairs.toFixed(2)}</td>
+                    <td></td>
+                    <td><button onClick={() => updateAllocation('chairs', 10)}>Update</button></td>
+                    <td></td>
+                    <td>{variances.chairs.toFixed(2)}%</td>
+                </tr>
+            </tbody>
+        </table>
+    );
+};
